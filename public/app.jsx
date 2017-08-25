@@ -1,19 +1,35 @@
 
 var GreeterMessage = React.createClass({
     render: function () {
+        var name = this.props.name;
+        var message = this.props.message;
+
+
         return (
             <div>
-                <h1> Some H1</h1>
-                <p>Some paragraph</p>
+                <h1>Hello {name}! </h1>
+                <p>Some {message}!</p>
         </div>
         );
     }
 });
 
 var GreeterForm = React.createClass({
+    onFormSubmit: function(e) {
+        e.preventDefault();
+
+
+        var name = this.refs.name.value;
+
+        if(name.length > 0 ) {
+            this.refs.name.value = ''; 
+            this.props.onNewName(name);
+             
+        }
+    },
     render: function () {
         return (
-            <form>
+            <form onSubmit={this.onFormSubmit}>
                 <input type="text" ref="name"/>
                 <button>Set Name</button>
             </form>
@@ -26,50 +42,28 @@ var Greeter = React.createClass({
     getDefaultProps: function() {
         return {
             name: "React",
-            message: "This is from the component"
+            message: " default message"
         }
     },
     getInitialState: function () {
         return {
-            name: this.props.name
+            name: this.props.name,
+            message: this.props.message
         }
     },
-    onButtonClick: function (e){
-
-        //This event prevents refreshing page
-        e.preventDefault();
-        
-        var nameRef = this.refs.name;
-        var name = nameRef.value
-
-        //make a input field always empty
-        nameRef.value = "";
-
-        // doesn't let to click event remove a name when a imput field is empty!
-        if (typeof name === 'string' && name.length > 0) {
-
-            this.setState({
-                name: name
-            })
-    
-        }
+    handleNewName: function (name){
+        this.setState({
+            name: name
+        });
     },
     render: function () {
         var name = this.state.name;
         var message = this.props.message;
+
         return (
             <div>
-                <h1>Hello {name}!</h1>
-                <p>{message}</p>
-
-                <GreeterMessage/>
-
-
-                <form onSubmit={this.onButtonClick}>
-                    <input type="text" ref="name"/>
-                    <button>Set Name</button>
-                </form>
-                <GreeterForm/>
+                <GreeterMessage name={name} message={message}/>
+                <GreeterForm onNewName={this.handleNewName}/>
             </div>
         );
     }
@@ -78,7 +72,7 @@ var Greeter = React.createClass({
 var firstName = 'Arkadiusz';
 var firstMessage = 'Yeah this is from the component but the second message'
 ReactDOM.render(
-    <Greeter name={firstName} message={firstMessage} />,
+    <Greeter name={firstName} />,
     
     document.getElementById('app')    
 );
